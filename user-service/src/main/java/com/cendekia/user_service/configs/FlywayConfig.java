@@ -1,4 +1,4 @@
-package com.cendekia.user_service;
+package com.cendekia.user_service.configs;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.context.annotation.Bean;
