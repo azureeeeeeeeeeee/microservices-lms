@@ -12,6 +12,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,12 +34,15 @@ public class User {
     private UUID id;
 
     @Column(unique = true, nullable = false)
+    @Size(min = 8, max = 8, message = "UID must be 8 characters long")
     private String uid;
 
     @Column(unique = true, nullable = false)
+    @Email(message = "Email should be valid")
     private String email;
 
     @Column(nullable = false)
+    @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters long")
     private String fullname;
 
     @Column(nullable = false)
