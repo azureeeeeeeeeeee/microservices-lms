@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cendekia.user_service.dtos.RegisterRequestDTO;
 import com.cendekia.user_service.dtos.RegisterResponseDTO;
 import com.cendekia.user_service.enums.Role;
+import com.cendekia.user_service.exceptions.PasswordDoNotMatchException;
 import com.cendekia.user_service.models.User;
 import com.cendekia.user_service.repositories.UserRepository;
 import com.cendekia.user_service.services.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -34,17 +37,12 @@ public class AuthController {
 
     @Operation(summary = "Register a new user")
     @PostMapping("/register")
-    public RegisterResponseDTO createUser(@RequestBody RegisterRequestDTO registerRequestDTO) {
+    public RegisterResponseDTO createUser(
+        @Valid @RequestBody RegisterRequestDTO registerRequestDTO
+    ) {
         RegisterResponseDTO response = new RegisterResponseDTO();
-
-        if (registerRequestDTO.getPassword() == null || registerRequestDTO.getPassword().length() < 8) {
-            response.setMessage("Password minimum 8 characters");
-            return response;
-        }
-
         if (registerRequestDTO.getPassword() == null || !registerRequestDTO.getPassword().equals(registerRequestDTO.getConfirmPassword())) {
-            response.setMessage("confirmed password do not match");
-            return response;
+            throw new PasswordDoNotMatchException("Password and confirm password do not match");
         }
 
         User user = User.builder()
