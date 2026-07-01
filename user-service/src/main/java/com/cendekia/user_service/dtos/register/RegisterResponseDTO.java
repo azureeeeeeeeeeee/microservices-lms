@@ -1,4 +1,4 @@
-package com.cendekia.user_service.dtos;
+package com.cendekia.user_service.dtos.register;
 
 import java.util.Map;
 

@@ -65,4 +65,6 @@ public class AuthController {
 
         return response;
     }
+
+    @Operation(summary = "Login a user and get JWT token")
 }
