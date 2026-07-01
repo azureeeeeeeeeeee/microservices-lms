@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.cendekia.user_service.dtos.LoginRequestDTO;
+import com.cendekia.user_service.dtos.login.LoginRequestDTO;
 import com.cendekia.user_service.utils.JwtUtil;
 
 import io.jsonwebtoken.JwtException;

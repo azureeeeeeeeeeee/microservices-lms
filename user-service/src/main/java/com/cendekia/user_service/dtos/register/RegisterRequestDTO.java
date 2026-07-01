@@ -1,4 +1,4 @@
-package com.cendekia.user_service.dtos;
+package com.cendekia.user_service.dtos.register;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
