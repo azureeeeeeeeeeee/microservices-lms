@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.cendekia.user_service.dtos.login.LoginRequestDTO;
 import com.cendekia.user_service.utils.JwtUtil;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 
 @Service
@@ -43,5 +44,9 @@ public class AuthService {
         } catch (JwtException e) {
             return false;
         }
+    }
+
+    public Claims extractClaims(String token) {
+        return jwtUtil.extractClaims(token);
     }
 }

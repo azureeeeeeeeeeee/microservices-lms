@@ -7,9 +7,11 @@ import java.util.UUID;
 
 import javax.print.DocFlavor.STRING;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +22,7 @@ import com.cendekia.user_service.dtos.login.LoginRequestDTO;
 import com.cendekia.user_service.dtos.login.LoginResponseDTO;
 import com.cendekia.user_service.dtos.register.RegisterRequestDTO;
 import com.cendekia.user_service.dtos.register.RegisterResponseDTO;
+import com.cendekia.user_service.dtos.user.GetUserResponseDTO;
 import com.cendekia.user_service.dtos.user.UpdateUserRequestDTO;
 import com.cendekia.user_service.dtos.user.UpdateUserResponseDTO;
 import com.cendekia.user_service.enums.Role;
@@ -134,4 +137,12 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+
+    // @Operation(summary = "Get currently authenticated user")
+    // @GetMapping("/me")
+    // public ResponseEntity<GetUserResponseDTO> getCurrentUser() {
+    //     log.info("Accessing get current user");
+    //     String token = 
+    //     Optional<String> tokeOptional = authService.extractClaims(null)
+    // }
 }
