@@ -2,7 +2,7 @@ package com.cendekia.user_service.dtos.user;
 
 import com.cendekia.user_service.enums.Role;
 
-import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Email;        
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -23,6 +23,5 @@ public class UpdateUserRequestDTO {
     private String email;
 
     @NotNull(message = "Role is required")
-    @NotBlank(message = "Role is required")
     private Role role;
 }
