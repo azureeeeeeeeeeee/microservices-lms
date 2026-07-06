@@ -62,4 +62,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(error);
     }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiError> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+        log.warn("Given credentials is invalid");
+        ApiError error = new ApiError();
+        error.setError(ex.getMessage());
+        error.setTimestamp(LocalDateTime.now());
+        return ResponseEntity.badRequest().body(error);
+    }
 }

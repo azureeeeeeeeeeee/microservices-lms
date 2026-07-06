@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.print.DocFlavor.STRING;
 
 import org.apache.catalina.connector.Response;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +28,7 @@ import com.cendekia.user_service.dtos.user.UpdateUserRequestDTO;
 import com.cendekia.user_service.dtos.user.UpdateUserResponseDTO;
 import com.cendekia.user_service.enums.Role;
 import com.cendekia.user_service.exceptions.EmailAlreadyExistsException;
+import com.cendekia.user_service.exceptions.InvalidCredentialsException;
 import com.cendekia.user_service.exceptions.PasswordDoNotMatchException;
 import com.cendekia.user_service.exceptions.UserNotFoundException;
 import com.cendekia.user_service.models.User;
@@ -68,12 +70,12 @@ public class AuthController {
         
         log.info("Creating user. . .");
         User user = User.builder()
-        .uid(registerRequestDTO.getUid())
-        .fullname(registerRequestDTO.getFullname())
-        .email(registerRequestDTO.getEmail())
-        .password(passwordEncoder.encode(registerRequestDTO.getPassword()))
-        .role(Role.ADMIN)
-        .build();
+            .uid(registerRequestDTO.getUid())
+            .fullname(registerRequestDTO.getFullname())
+            .email(registerRequestDTO.getEmail())
+            .password(passwordEncoder.encode(registerRequestDTO.getPassword()))
+            .role(Role.ADMIN)
+            .build();
         
         
         userRepository.save(user);
@@ -94,17 +96,14 @@ public class AuthController {
     public ResponseEntity<LoginResponseDTO> loginUser(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         log.info("Requesting into login");
         log.info("Authenticating given JWT");
-        Optional<String> tokenOptional = authService.authenticate(loginRequestDTO);
+        Map<String, String> tokens = authService.authenticate(loginRequestDTO)
+                    .orElseThrow(() -> new InvalidCredentialsException("Given credentials is invalid"));
         
-        if (tokenOptional.isEmpty()) {
-            log.warn("Invalid JWT");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponseDTO());
-        }
+        log.info("User {} authenticated successfully", loginRequestDTO.getUid());
 
-        log.info("Token has been validated");
-        String token = tokenOptional.get();
-        return ResponseEntity.ok(new LoginResponseDTO("Login is successful", token));
-        
+        LoginResponseDTO response = new LoginResponseDTO("Login successful", tokens.get("Refresh Token"), tokens.get("Access Token"));
+
+        return ResponseEntity.ok(response); 
     }
     
     @Operation(summary = "Update existing user")
