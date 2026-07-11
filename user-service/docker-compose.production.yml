@@ -22,9 +22,6 @@ services:
       # - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - JWT_SECRET=c2VjcmV0LWtleS1tdXN0LWJlLWF0LWxlYXN0LTMtY2hhcmFjdGVycy1sb25nLWFuZC1iYXNlNjQtZW5jb2RlZA==
       - SPRING_PROFILES_ACTIVE=prod
-    volumes:
-      - .:/app
-      - ~/.m2:/root/.m2
     ports:
       - "8000:8000"
     depends_on:

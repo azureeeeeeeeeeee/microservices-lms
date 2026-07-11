@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.cendekia.user_service.enums.Token;
+import com.cendekia.user_service.repositories.RefreshTokenRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -25,11 +26,13 @@ public class JwtUtil {
     private final Key secretKey;
     private final long accessTokenExpired;
     private final long refreshTokenExpired;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public JwtUtil(
         @Value("${jwt.secret}") String secretKey,
         @Value("${jwt.refresh-token-expiration}") long refreshTokenExpiration,
-        @Value("${jwt.access-token-expiration}") long accessTokenExpiration
+        @Value("${jwt.access-token-expiration}") long accessTokenExpiration,
+        RefreshTokenRepository refreshTokenRepository
     ) {
         byte[] keyBytes = Base64.getDecoder().decode(
             secretKey.getBytes(StandardCharsets.UTF_8)
@@ -37,6 +40,7 @@ public class JwtUtil {
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpired = refreshTokenExpiration;
         this.refreshTokenExpired = accessTokenExpired;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     public String generateAccessToken(UUID id, String email, String role) {
