@@ -1,5 +1,6 @@
 package com.cendekia.user_service.controllers;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cendekia.user_service.dtos.login.LoginRequestDTO;
 import com.cendekia.user_service.dtos.login.LoginResponseDTO;
+import com.cendekia.user_service.dtos.refresh.UpdateAccessTokenRequestDTO;
+import com.cendekia.user_service.dtos.refresh.UpdateAccessTokenResponseDTO;
 import com.cendekia.user_service.dtos.register.RegisterRequestDTO;
 import com.cendekia.user_service.dtos.register.RegisterResponseDTO;
 import com.cendekia.user_service.dtos.user.GetUserResponseDTO;
@@ -29,11 +32,15 @@ import com.cendekia.user_service.dtos.user.UpdateUserResponseDTO;
 import com.cendekia.user_service.enums.Role;
 import com.cendekia.user_service.exceptions.EmailAlreadyExistsException;
 import com.cendekia.user_service.exceptions.InvalidCredentialsException;
+import com.cendekia.user_service.exceptions.InvalidRefreshTokenException;
 import com.cendekia.user_service.exceptions.PasswordDoNotMatchException;
 import com.cendekia.user_service.exceptions.UserNotFoundException;
+import com.cendekia.user_service.models.RefreshToken;
 import com.cendekia.user_service.models.User;
+import com.cendekia.user_service.repositories.RefreshTokenRepository;
 import com.cendekia.user_service.repositories.UserRepository;
 import com.cendekia.user_service.services.AuthService;
+import com.cendekia.user_service.utils.JwtUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -48,11 +55,15 @@ public class AuthController {
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(AuthService authService, PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public AuthController(AuthService authService, PasswordEncoder passwordEncoder, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil) {
         this.authService = authService;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.jwtUtil = jwtUtil;
     }
 
 
@@ -136,6 +147,41 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "Refresh Existing Access Token")
+    @PostMapping("/token/refresh")
+    public ResponseEntity<UpdateAccessTokenResponseDTO> refreshAccessToken(
+        @Valid @RequestBody UpdateAccessTokenRequestDTO updateAccessTokenRequestDTO
+    ) {
+        log.info("Refreshing token for user");
+        RefreshToken token = refreshTokenRepository.findByToken(updateAccessTokenRequestDTO.getToken())
+                                            .orElseThrow(() -> new InvalidRefreshTokenException("Invalid Refresh Token"));
+
+        if (token.getRevoked()) {
+            throw new InvalidRefreshTokenException("Token is invalid !");
+        }
+        
+        if (Instant.now().isAfter(token.getExpiresAt())) {
+            throw new InvalidRefreshTokenException("Token is expired !");
+        }
+
+        
+        User user = token.getUser();
+        log.debug("User ID : {}", token.getUser());
+
+        String newAccessToken = jwtUtil.generateAccessToken(user.getId(), user.getEmail(), user.getRole().toString());
+
+        UpdateAccessTokenResponseDTO response = new UpdateAccessTokenResponseDTO();
+
+        Map<String, String> data = new HashMap<>();
+        data.put("Access Token", newAccessToken);
+
+        response.setMessage("Refresh access token is successful");
+        response.setData(data);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    
 
     // @Operation(summary = "Get currently authenticated user")
     // @GetMapping("/me")

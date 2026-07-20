@@ -14,7 +14,6 @@ import lombok.Setter;
 @Setter
 public class ApiError {
     private LocalDateTime timestamp;
-    private int status;
     private String error;
     private Map<String, String> errors;
 }

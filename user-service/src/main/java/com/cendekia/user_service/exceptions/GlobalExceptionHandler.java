@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.catalina.connector.Response;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 // import org.slf4j.Logger;
 // import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +26,6 @@ public class GlobalExceptionHandler {
         log.warn("Password do not match");
         ApiError apiError = new ApiError();
         apiError.setTimestamp(LocalDateTime.now());
-        apiError.setStatus(400);
         apiError.setError(ex.getMessage());
         return ResponseEntity.badRequest().body(apiError);
     }
@@ -33,7 +35,6 @@ public class GlobalExceptionHandler {
         log.warn("Validation error: {}", ex.getMessage());
         ApiError apiError = new ApiError();
         apiError.setTimestamp(LocalDateTime.now());
-        apiError.setStatus(400);
         apiError.setError("Validation error");
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
@@ -47,7 +48,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleUserNotFoundException(UserNotFoundException ex) {
         log.warn("User not found for given UID");
         ApiError error = new ApiError();
-        error.setStatus(404);
         error.setError(ex.getMessage());
 
         return ResponseEntity.status(404).body(error);
@@ -70,5 +70,14 @@ public class GlobalExceptionHandler {
         error.setError(ex.getMessage());
         error.setTimestamp(LocalDateTime.now());
         return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<ApiError> handleInvalidRefreshTokenException(InvalidRefreshTokenException ex) {
+        log.warn("Given refresh token is invalid");
+        ApiError error = new ApiError();
+        error.setError(ex.getMessage());
+        error.setTimestamp(LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 }
