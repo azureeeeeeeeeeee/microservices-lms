@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cendekia.user_service.dtos.login.LoginRequestDTO;
 import com.cendekia.user_service.dtos.login.LoginResponseDTO;
+import com.cendekia.user_service.dtos.logout.LogoutRequestDTO;
+import com.cendekia.user_service.dtos.logout.LogoutResponseDTO;
 import com.cendekia.user_service.dtos.refresh.UpdateAccessTokenRequestDTO;
 import com.cendekia.user_service.dtos.refresh.UpdateAccessTokenResponseDTO;
 import com.cendekia.user_service.dtos.register.RegisterRequestDTO;
@@ -178,6 +180,31 @@ public class AuthController {
 
         response.setMessage("Refresh access token is successful");
         response.setData(data);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PutMapping("/logout")
+    public ResponseEntity<LogoutResponseDTO> logout(
+        @Valid @RequestBody LogoutRequestDTO logoutRequestDTO
+    ) {
+        RefreshToken token = refreshTokenRepository.findByToken(logoutRequestDTO.getToken())
+                                .orElseThrow(() -> new InvalidRefreshTokenException("Token invalid"));
+
+        if (token.getRevoked()) {
+            throw new InvalidRefreshTokenException("User already logged out");
+        }
+
+        if (Instant.now().isAfter(token.getExpiresAt())) {
+            throw new InvalidRefreshTokenException("Invalid user");
+        }
+        
+        token.setRevoked(true);
+        refreshTokenRepository.save(token);
+
+        LogoutResponseDTO response = new LogoutResponseDTO();
+
+        response.setMessage("Logout Successful");
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
