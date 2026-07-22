@@ -1,0 +1,17 @@
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: api-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - "8001:8001"
+    networks:
+      - internal
+
+networks:
+  internal:
+    external: true
+    name: internal
