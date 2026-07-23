@@ -1,0 +1,57 @@
+services:
+  course-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: course-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://course-postgres:5432/course_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_FLYWAY_ENABLED=true
+      - SPRING_FLYWAY_URL=jdbc:postgresql://course-postgres:5432/course_db
+      - SPRING_FLYWAY_USER=postgres
+      - SPRING_FLYWAY_PASSWORD=postgres
+      - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - "8002:8002"
+    depends_on:
+      - course-postgres
+    networks:
+      - internal
+
+  course-postgres:
+    image: postgres:16
+    container_name: course-postgres
+    environment:
+      POSTGRES_DB: course_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "6002:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  course-adminer:
+    image: adminer:latest
+    container_name: course-adminer
+    ports:
+      - "7002:8080"
+    depends_on:
+      - course-postgres
+    networks:
+      - internal
+
+volumes:
+  postgres_data:
+
+networks:
+  internal:
+    external: true
+    name: internal
