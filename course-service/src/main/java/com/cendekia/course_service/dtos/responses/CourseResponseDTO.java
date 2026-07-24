@@ -1,4 +1,4 @@
-package com.cendekia.course_service.dtos;
+package com.cendekia.course_service.dtos.responses;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

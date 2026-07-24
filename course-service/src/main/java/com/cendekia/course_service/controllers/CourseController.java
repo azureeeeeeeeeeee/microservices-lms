@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cendekia.course_service.dtos.CourseDTO;
-import com.cendekia.course_service.dtos.GetCourseResponseDTO;
+import com.cendekia.course_service.dtos.responses.GetCourseResponseDTO;
 import com.cendekia.course_service.services.CourseService;
 
 import lombok.RequiredArgsConstructor;
