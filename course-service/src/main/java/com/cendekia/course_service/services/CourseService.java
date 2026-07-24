@@ -1,5 +1,6 @@
 package com.cendekia.course_service.services;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -26,5 +27,19 @@ public class CourseService {
                     ));
 
         return CourseMapper.toDTO(course);
+    }
+
+    public CourseDTO createCourse(String title, String description, UUID instructorId, UUID createdBy) {
+        // TODO : Add Authorization
+
+        Course course = Course.builder()
+            .title(title)
+            .description(description)
+            .instructorId(instructorId)
+            .createdBy(createdBy)
+            .createdAt(Instant.now())
+            .build();
+
+        return CourseMapper.toDTO(courseRepository.save(course));
     }
 }
