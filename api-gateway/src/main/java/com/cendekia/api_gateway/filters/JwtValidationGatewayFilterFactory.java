@@ -17,6 +17,7 @@ public class JwtValidationGatewayFilterFactory extends AbstractGatewayFilterFact
     private final JwtUtil jwtUtil;
 
     public JwtValidationGatewayFilterFactory(JwtUtil jwtUtil) {
+        super(Config.class);
         this.jwtUtil = jwtUtil;
     }
 

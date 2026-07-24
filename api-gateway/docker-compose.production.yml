@@ -6,6 +6,7 @@ services:
     container_name: api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - JWT_SECRET=c2VjcmV0LWtleS1tdXN0LWJlLWF0LWxlYXN0LTMtY2hhcmFjdGVycy1sb25nLWFuZC1iYXNlNjQtZW5jb2RlZA==
     ports:
       - "8001:8001"
     networks:
