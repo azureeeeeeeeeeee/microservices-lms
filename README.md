@@ -16,3 +16,8 @@ ADMINER SERVER PORT :
 ```
 7000-7999
 ```
+
+GRPC SERVER PORT :
+````
+5000-5999
+````
