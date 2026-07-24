@@ -37,10 +37,10 @@ public class Course {
     private String description;
 
     @Column(name = "instructor_id", nullable = false)
-    private UUID instructor_id;
+    private UUID instructorId;
 
     @Column(name = "craeted_by", nullable = false)
-    private UUID created_by;
+    private UUID createdBy;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
