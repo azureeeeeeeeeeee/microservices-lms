@@ -39,7 +39,7 @@ public class Course {
     @Column(name = "instructor_id", nullable = false)
     private UUID instructorId;
 
-    @Column(name = "craeted_by", nullable = false)
+    @Column(name = "created_by", nullable = false)
     private UUID createdBy;
 
     @Column(name = "created_at", nullable = false, updatable = false)
