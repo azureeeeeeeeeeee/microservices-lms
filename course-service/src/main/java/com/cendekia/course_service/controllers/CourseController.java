@@ -28,15 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 public class CourseController {
     private final CourseService courseService;
 
-    @GetMapping("/{id}/")
+    @GetMapping("/{id}")
     public ResponseEntity<GetCourseResponseDTO> getSingleCourse(@PathVariable UUID id) {
-        CourseDTO dto = courseService.getSingleCourse(id);
-        GetCourseResponseDTO response = new GetCourseResponseDTO();
-
-        String message = String.format("Course fetched successfully [Title: %s, ID: %s]", dto.getTitle(), dto.getId());
-        response.setMesssage(message);
-        response.setCourse(dto);
-
+        GetCourseResponseDTO response = courseService.getSingleCourse(id);
         return ResponseEntity.ok(response);
     }
 

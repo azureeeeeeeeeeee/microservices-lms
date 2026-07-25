@@ -17,8 +17,9 @@ services:
       - SPRING_FLYWAY_PASSWORD=postgres
       - SPRING_FLYWAY_BASELINE_ON_MIGRATE=true
       - SPRING_PROFILES_ACTIVE=dev
-      - GRPC_CLIENT_USER_SERVICE_ADDRESS=static://localhost:5000
+      - GRPC_CLIENT_USER_SERVICE_ADDRESS=static://user-service:5000
       - GRPC_CLIENT_USER_SERVICE_NEGOTIATIONTYPE=plaintext
+      - GRPC_CLIENT_USER_SERVICE_NEGOTIATION_TYPE=plaintext
     volumes:
       - .:/app
       - ~/.m2:/root/.m2
