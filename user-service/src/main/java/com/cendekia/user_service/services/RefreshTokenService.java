@@ -1,7 +1,6 @@
 package com.cendekia.user_service.services;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

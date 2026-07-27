@@ -3,17 +3,10 @@ package com.cendekia.user_service.controllers;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 
-import javax.print.DocFlavor.STRING;
-
-import org.apache.catalina.connector.Response;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,7 +21,6 @@ import com.cendekia.user_service.dtos.refresh.UpdateAccessTokenRequestDTO;
 import com.cendekia.user_service.dtos.refresh.UpdateAccessTokenResponseDTO;
 import com.cendekia.user_service.dtos.register.RegisterRequestDTO;
 import com.cendekia.user_service.dtos.register.RegisterResponseDTO;
-import com.cendekia.user_service.dtos.user.GetUserResponseDTO;
 import com.cendekia.user_service.dtos.user.UpdateUserRequestDTO;
 import com.cendekia.user_service.dtos.user.UpdateUserResponseDTO;
 import com.cendekia.user_service.enums.Role;
