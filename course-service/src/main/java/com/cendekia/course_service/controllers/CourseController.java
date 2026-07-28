@@ -37,9 +37,11 @@ public class CourseController {
     @PostMapping("/")
     public ResponseEntity<CreateCourseResponseDTO> createCourse(
         @Valid @RequestBody CreateCourseRequestDTO createCourseRequestDTO,
-        @RequestHeader("X-USER-ID") String userId
+        @RequestHeader("X-USER-ID") String userId,
+        @RequestHeader("X-USER-ROLE") String userRole
     ) {
         CourseDTO course = courseService.createCourse(
+            userRole,
             createCourseRequestDTO.getTitle(),
             createCourseRequestDTO.getDescription(),
             createCourseRequestDTO.getInstructorId(),

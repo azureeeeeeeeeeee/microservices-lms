@@ -12,6 +12,7 @@ import com.cendekia.course_service.grpc.UserGrpcClient;
 import com.cendekia.course_service.mapper.CourseMapper;
 import com.cendekia.course_service.mapper.InstructorMapper;
 import com.cendekia.course_service.models.Course;
+import com.cendekia.course_service.permissions.CoursePermissions;
 import com.cendekia.course_service.repositories.CourseRepository;
 import com.cendekia.user.grpc.UserResponse;
 
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CourseService {
     private final CourseRepository courseRepository;
     private final UserGrpcClient userGrpcClient;
+    private final CoursePermissions coursePermissions;
     
     public GetCourseResponseDTO getSingleCourse(UUID id) {
         Course course = courseRepository.findById(id)
@@ -41,8 +43,9 @@ public class CourseService {
         return response;
     }
 
-    public CourseDTO createCourse(String title, String description, UUID instructorId, UUID createdBy) {
+    public CourseDTO createCourse(String role, String title, String description, UUID instructorId, UUID createdBy) {
         // TODO : Add Authorization
+        coursePermissions.checkCreate(role);
 
         Course course = Course.builder()
             .title(title)
