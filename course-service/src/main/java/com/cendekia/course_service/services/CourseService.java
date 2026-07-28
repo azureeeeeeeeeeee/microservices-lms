@@ -1,11 +1,14 @@
 package com.cendekia.course_service.services;
 
+
 import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.cendekia.course_service.dtos.CourseDTO;
+import com.cendekia.course_service.dtos.requests.CreateCourseRequestDTO;
+import com.cendekia.course_service.dtos.requests.UpdateCourseRequestDTO;
 import com.cendekia.course_service.dtos.responses.GetCourseResponseDTO;
 import com.cendekia.course_service.exceptions.InvalidCourseException;
 import com.cendekia.course_service.grpc.UserGrpcClient;
@@ -43,18 +46,32 @@ public class CourseService {
         return response;
     }
 
-    public CourseDTO createCourse(String role, String title, String description, UUID instructorId, UUID createdBy) {
-        // TODO : Add Authorization
+    public CourseDTO createCourse(CreateCourseRequestDTO createCourseRequestDTO, String userId, String role) {
         coursePermissions.checkCreate(role);
 
         Course course = Course.builder()
-            .title(title)
-            .description(description)
-            .instructorId(instructorId)
-            .createdBy(createdBy)
+            .title(createCourseRequestDTO.getTitle())
+            .description(createCourseRequestDTO.getDescription())
+            .instructorId(createCourseRequestDTO.getInstructorId())
+            .createdBy(UUID.fromString(userId))
             .createdAt(Instant.now())
             .build();
 
         return CourseMapper.toDTO(courseRepository.save(course));
+    }
+
+
+    public CourseDTO updateCourse(UpdateCourseRequestDTO updateCourseRequestDTO, String courseId, String userRole, String userId) {
+        Course course = courseRepository.findById(UUID.fromString(courseId))
+            .orElseThrow(() -> new InvalidCourseException(String.format("Course not exists [ID : %s]", courseId)));
+        
+        coursePermissions.checkUpdate(userRole, userId, course);
+
+        course.setTitle(updateCourseRequestDTO.getTitle());
+        course.setDescription(updateCourseRequestDTO.getDescription());
+
+        Course updatedCourse = courseRepository.save(course);
+
+        return CourseMapper.toDTO(updatedCourse);
     }
 }
