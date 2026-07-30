@@ -47,4 +47,23 @@ public class GlobalExceptionHandler {
         error.setTimestamp(LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
+
+    @ExceptionHandler(io.grpc.StatusRuntimeException.class)
+    public ResponseEntity<ApiError> handleGrpcException(io.grpc.StatusRuntimeException ex) {
+        log.error("gRPC call failed: {}", ex.getMessage());
+        ApiError error = new ApiError();
+        error.setTimestamp(LocalDateTime.now());
+
+        HttpStatus httpStatus = switch (ex.getStatus().getCode()) {
+            case NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case INVALID_ARGUMENT -> HttpStatus.BAD_REQUEST;
+            case UNAVAILABLE -> HttpStatus.SERVICE_UNAVAILABLE;
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
+
+        error.setError(ex.getStatus().getDescription() != null 
+            ? ex.getStatus().getDescription() 
+            : "An error occurred while communicating with an internal service");
+        return ResponseEntity.status(httpStatus).body(error);
+    }
 }

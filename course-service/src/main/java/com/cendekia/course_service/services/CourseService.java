@@ -17,6 +17,14 @@ import com.cendekia.course_service.mapper.InstructorMapper;
 import com.cendekia.course_service.models.Course;
 import com.cendekia.course_service.permissions.CoursePermissions;
 import com.cendekia.course_service.repositories.CourseRepository;
+import com.cendekia.course_service.dtos.responses.GetAllCoursesResponseDTO;
+import com.cendekia.course_service.dtos.CourseWithInstructorDTO;
+import com.cendekia.course_service.dtos.InstructorDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import java.util.List;
+import java.util.stream.Collectors;
 import com.cendekia.user.grpc.UserResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -44,6 +52,36 @@ public class CourseService {
         response.setInstructor(InstructorMapper.toDTO(instructor));
 
         return response;
+    }
+
+    public GetAllCoursesResponseDTO getAllCourses(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Course> courses = courseRepository.findAll(pageable);
+
+        List<CourseWithInstructorDTO> courseWithInstructorDTOs = courses.getContent().stream().map(course -> {
+            InstructorDTO instructorDTO = null;
+            try {
+                UserResponse instructor = userGrpcClient.getUser(course.getInstructorId());
+                instructorDTO = InstructorMapper.toDTO(instructor);
+            } catch (Exception e) {
+                log.warn("Failed to fetch instructor [ID: {}] for course [ID: {}]: {}",
+                        course.getInstructorId(), course.getId(), e.getMessage());
+            }
+            return CourseWithInstructorDTO.builder()
+                    .course(CourseMapper.toDTO(course))
+                    .instructor(instructorDTO)
+                    .build();
+        }).collect(Collectors.toList());
+
+        return GetAllCoursesResponseDTO.builder()
+                .message("Courses fetched successfully")
+                .data(courseWithInstructorDTOs)
+                .pageNo(courses.getNumber())
+                .pageSize(courses.getSize())
+                .totalElements(courses.getTotalElements())
+                .totalPages(courses.getTotalPages())
+                .last(courses.isLast())
+                .build();
     }
 
     public CourseDTO createCourse(CreateCourseRequestDTO createCourseRequestDTO, String userId, String role) {

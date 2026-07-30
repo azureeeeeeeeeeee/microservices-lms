@@ -18,7 +18,9 @@ import com.cendekia.course_service.dtos.requests.UpdateCourseRequestDTO;
 import com.cendekia.course_service.dtos.responses.CreateCourseResponseDTO;
 import com.cendekia.course_service.dtos.responses.GetCourseResponseDTO;
 import com.cendekia.course_service.dtos.responses.UpdateCourseResponseDTO;
+import com.cendekia.course_service.dtos.responses.GetAllCoursesResponseDTO;
 import com.cendekia.course_service.services.CourseService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +39,16 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/")
+    @GetMapping()
+    public ResponseEntity<GetAllCoursesResponseDTO> getAllCourses(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        GetAllCoursesResponseDTO response = courseService.getAllCourses(page, size);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping()
     public ResponseEntity<CreateCourseResponseDTO> createCourse(
         @Valid @RequestBody CreateCourseRequestDTO createCourseRequestDTO,
         @RequestHeader("X-USER-ID") String userId,
