@@ -3,6 +3,7 @@ package com.cendekia.course_service.controllers;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import com.cendekia.course_service.dtos.CourseDTO;
 import com.cendekia.course_service.dtos.requests.CreateCourseRequestDTO;
 import com.cendekia.course_service.dtos.requests.UpdateCourseRequestDTO;
 import com.cendekia.course_service.dtos.responses.CreateCourseResponseDTO;
+import com.cendekia.course_service.dtos.responses.DeleteCourseResponseDTO;
 import com.cendekia.course_service.dtos.responses.GetCourseResponseDTO;
 import com.cendekia.course_service.dtos.responses.UpdateCourseResponseDTO;
 import com.cendekia.course_service.dtos.responses.GetAllCoursesResponseDTO;
@@ -79,6 +81,19 @@ public class CourseController {
         UpdateCourseResponseDTO response = new UpdateCourseResponseDTO();
         response.setMessage(String.format("Course updated successfuly [ID : %s]", id));
         response.setCourse(course);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DeleteCourseResponseDTO> deleteCourse(
+        @PathVariable String id,
+        @RequestHeader("X-USER-ROLE") String role
+    ) {
+        courseService.deleteCourse(id, role);
+
+        DeleteCourseResponseDTO response = new DeleteCourseResponseDTO();
+        response.setMessage(String.format("Course has been deleted [Course ID : %s]", id));
 
         return ResponseEntity.ok(response);
     }

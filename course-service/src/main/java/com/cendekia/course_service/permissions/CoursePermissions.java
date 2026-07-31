@@ -23,6 +23,10 @@ public class CoursePermissions {
         return course.getInstructorId().equals(UUID.fromString(userId));
     }
 
+    public boolean canDelete(String role) {
+        return role.equals("ADMIN");
+    }
+
 
 
     // checkAction()
@@ -34,7 +38,13 @@ public class CoursePermissions {
 
     public void checkUpdate(String role, String userId, Course course) {
         if (!this.canUpdate(role, userId, course)) {
-            throw new AccessDeniedException("You do not have permission to this course");
+            throw new AccessDeniedException("You do not have permission to update this course");
+        }
+    }
+
+    public void checkDelete(String role) {
+        if (!this.canDelete(role)) {
+            throw new AccessDeniedException("You do not have permissions to delete this course");
         }
     }
 }

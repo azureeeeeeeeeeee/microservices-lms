@@ -112,4 +112,13 @@ public class CourseService {
 
         return CourseMapper.toDTO(updatedCourse);
     }
+
+    public void deleteCourse(String courseId, String role) {
+        coursePermissions.checkDelete(role);
+
+        Course course = courseRepository.findById(UUID.fromString(courseId))
+            .orElseThrow(() -> new InvalidCourseException(String.format("Course not exists [ID : %s]", courseId.toString())));
+        
+        courseRepository.delete(course);
+    }
 }
