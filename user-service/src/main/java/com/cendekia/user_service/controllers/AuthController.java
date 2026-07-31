@@ -167,11 +167,10 @@ public class AuthController {
 
         UpdateAccessTokenResponseDTO response = new UpdateAccessTokenResponseDTO();
 
-        Map<String, String> data = new HashMap<>();
-        data.put("Access Token", newAccessToken);
 
         response.setMessage("Refresh access token is successful");
-        response.setData(data);
+        response.setAccessToken(newAccessToken);
+        response.setRefreshToken(token.getToken());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

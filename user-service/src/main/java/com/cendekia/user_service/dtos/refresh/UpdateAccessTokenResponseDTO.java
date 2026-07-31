@@ -1,7 +1,5 @@
 package com.cendekia.user_service.dtos.refresh;
 
-import java.util.Map;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,5 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UpdateAccessTokenResponseDTO {
     public String message;
-    public Map<String, String> data;
+    public String accessToken;
+    public String refreshToken;
 }
