@@ -1,0 +1,8 @@
+CREATE TABLE enrollments (
+    id UUID PRIMARY KEY,
+
+    course__id UUID NOT NULL,
+    user_id UUID NOT NULL,
+
+    enrolled_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+)
