@@ -3,10 +3,12 @@ package com.cendekia.user_service.controllers;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +23,8 @@ import com.cendekia.user_service.dtos.refresh.UpdateAccessTokenRequestDTO;
 import com.cendekia.user_service.dtos.refresh.UpdateAccessTokenResponseDTO;
 import com.cendekia.user_service.dtos.register.RegisterRequestDTO;
 import com.cendekia.user_service.dtos.register.RegisterResponseDTO;
+import com.cendekia.user_service.dtos.user.GetUserRequestDTO;
+import com.cendekia.user_service.dtos.user.GetUserResponseDTO;
 import com.cendekia.user_service.dtos.user.UpdateUserRequestDTO;
 import com.cendekia.user_service.dtos.user.UpdateUserResponseDTO;
 import com.cendekia.user_service.enums.Role;
@@ -36,6 +40,7 @@ import com.cendekia.user_service.repositories.UserRepository;
 import com.cendekia.user_service.services.AuthService;
 import com.cendekia.user_service.utils.JwtUtil;
 
+import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -201,11 +206,25 @@ public class AuthController {
     }
     
 
-    // @Operation(summary = "Get currently authenticated user")
-    // @GetMapping("/me")
-    // public ResponseEntity<GetUserResponseDTO> getCurrentUser() {
-    //     log.info("Accessing get current user");
-    //     String token = 
-    //     Optional<String> tokeOptional = authService.extractClaims(null)
-    // }
+    @Operation(summary = "Get currently authenticated user")
+    @GetMapping("/me")
+    public ResponseEntity<GetUserResponseDTO> getCurrentUser(
+        @RequestBody @Valid GetUserRequestDTO getUserRequestDTO
+    ) {
+        log.info("Accessing get current user");
+        String token = getUserRequestDTO.getToken();
+        Claims claims = authService.extractClaims(token);
+        UUID userId = UUID.fromString(claims.getSubject());
+        User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new UserNotFoundException("User not found for given id : " + userId));
+        
+        GetUserResponseDTO response = new GetUserResponseDTO();
+        response.setMessage("Current user's data successfully fetched");
+        response.setFullname(user.getFullname());
+        response.setEmail(user.getFullname());
+        response.setRole(user.getRole());
+        response.setUserId(user.getId().toString());
+
+        return ResponseEntity.ok(response);
+    }
 }
