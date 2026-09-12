@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cendekia.course_service.dtos.CourseDTO;
+import com.cendekia.course_service.dtos.requests.AssignInstructorRequestDTO;
 import com.cendekia.course_service.dtos.requests.CreateCourseRequestDTO;
 import com.cendekia.course_service.dtos.requests.UpdateCourseRequestDTO;
 import com.cendekia.course_service.dtos.responses.CreateCourseResponseDTO;
@@ -96,5 +97,27 @@ public class CourseController {
         response.setMessage(String.format("Course has been deleted [Course ID : %s]", id));
 
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/assign")
+    public ResponseEntity<UpdateCourseResponseDTO> assignInstructor(
+        @Valid @RequestBody AssignInstructorRequestDTO assignInstructorRequestDTO,
+        @PathVariable String id,
+        @RequestHeader("X-USER-ROLE") String role
+    ) {
+        CourseDTO course = courseService.assignInstructor(id, role, assignInstructorRequestDTO.getNewInstructorId().toString());
+
+        UpdateCourseResponseDTO response = new UpdateCourseResponseDTO();
+        response.setCourse(course);
+        response.setMessage(
+            String.format(
+                "Instructor [ID: %s] assigned to Course [ID: %s]", 
+                assignInstructorRequestDTO.getNewInstructorId().toString(),
+                course.getId()
+            )
+        );
+
+        return ResponseEntity.ok(response);
+
     }
 }

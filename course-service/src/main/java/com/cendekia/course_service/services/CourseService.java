@@ -11,6 +11,7 @@ import com.cendekia.course_service.dtos.requests.CreateCourseRequestDTO;
 import com.cendekia.course_service.dtos.requests.UpdateCourseRequestDTO;
 import com.cendekia.course_service.dtos.responses.GetCourseResponseDTO;
 import com.cendekia.course_service.exceptions.InvalidCourseException;
+import com.cendekia.course_service.exceptions.InvalidUserException;
 import com.cendekia.course_service.grpc.UserGrpcClient;
 import com.cendekia.course_service.mapper.CourseMapper;
 import com.cendekia.course_service.mapper.InstructorMapper;
@@ -118,7 +119,29 @@ public class CourseService {
 
         Course course = courseRepository.findById(UUID.fromString(courseId))
             .orElseThrow(() -> new InvalidCourseException(String.format("Course not exists [ID : %s]", courseId.toString())));
+            
+            courseRepository.delete(course);
+        }
         
-        courseRepository.delete(course);
+    public CourseDTO assignInstructor(
+        String courseId,
+        String userRole,
+        String newInstructorId
+    ) {
+        coursePermissions.checkAssignInstructor(userRole);
+        
+        Course course = courseRepository.findById(UUID.fromString(courseId))
+            .orElseThrow(() -> new InvalidCourseException(String.format("Course not exists [ID : %s]", courseId.toString())));
+
+        UserResponse instructor = userGrpcClient.getUser(UUID.fromString(newInstructorId));
+
+        if (!instructor.getRole().equals("TEACHER")) {
+            throw new InvalidUserException("Given user is not a Teacher.");
+        }
+
+        course.setInstructorId(UUID.fromString(newInstructorId));
+        Course updatedCourse = courseRepository.save(course);
+
+        return CourseMapper.toDTO(updatedCourse);
     }
 }

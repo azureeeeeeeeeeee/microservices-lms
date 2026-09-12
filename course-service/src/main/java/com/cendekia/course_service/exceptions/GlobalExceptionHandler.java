@@ -66,4 +66,15 @@ public class GlobalExceptionHandler {
             : "An error occurred while communicating with an internal service");
         return ResponseEntity.status(httpStatus).body(error);
     }
+
+
+    @ExceptionHandler(InvalidUserException.class)
+    public ResponseEntity<ApiError> handleInvalidUserException(InvalidUserException ex) {
+        log.error("Invalid User Exception Caught : {}", ex.getMessage());
+        ApiError error = new ApiError();
+        error.setTimestamp(LocalDateTime.now());
+        error.setError(ex.getMessage());
+
+        return ResponseEntity.badRequest().body(error);
+    }
 }

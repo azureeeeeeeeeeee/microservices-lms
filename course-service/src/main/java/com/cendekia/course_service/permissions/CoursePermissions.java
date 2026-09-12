@@ -27,6 +27,10 @@ public class CoursePermissions {
         return role.equals("ADMIN");
     }
 
+    public boolean canAssignInstructor(String role) {
+        return role.equals("ADMIN");
+    }
+
 
 
     // checkAction()
@@ -44,6 +48,12 @@ public class CoursePermissions {
 
     public void checkDelete(String role) {
         if (!this.canDelete(role)) {
+            throw new AccessDeniedException("You do not have permissions to delete this course");
+        }
+    }
+
+    public void checkAssignInstructor(String role) {
+        if (!this.canAssignInstructor(role)) {
             throw new AccessDeniedException("You do not have permissions to delete this course");
         }
     }
