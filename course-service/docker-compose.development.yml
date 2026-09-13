@@ -20,11 +20,13 @@ services:
       - GRPC_CLIENT_USER_SERVICE_ADDRESS=static://user-service:5000
       - GRPC_CLIENT_USER_SERVICE_NEGOTIATIONTYPE=plaintext
       - GRPC_CLIENT_USER_SERVICE_NEGOTIATION_TYPE=plaintext
+      - GRPC_SERVER_PORT=5002
     volumes:
       - .:/app
       - ~/.m2:/root/.m2
     ports:
       - "8002:8002"
+      - "5002:5002"
     depends_on:
       - course-postgres
     networks:
