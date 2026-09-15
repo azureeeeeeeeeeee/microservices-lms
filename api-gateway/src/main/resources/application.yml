@@ -35,6 +35,21 @@ spring:
               filters:
                 - StripPrefix=1
                 - JwtValidation
+            - id: enrollment-public
+              uri: http://enrollment-service:8003
+              predicates:
+                - Path=/api/enrollments/**
+                - Method=GET
+              filters:
+                - StripPrefix=1
+            - id: enrollment-protected
+              uri: http://enrollment-service:8003
+              predicates:
+                - Path=/api/enrollments/**
+                - Method=POST,DELETE
+              filters:
+                - StripPrefix=1
+                - JwtValidation
             # - id: patient-service-route
             #   uri: http://patient-service:4000
             #   predicates:

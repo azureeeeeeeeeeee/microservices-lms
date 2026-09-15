@@ -12,4 +12,4 @@ CREATE TABLE submissions (
         FOREIGN KEY (assignment_id)
         REFERENCES assignments(id)
         ON DELETE CASCADE
-)
+);
